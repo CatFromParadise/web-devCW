@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+.container {
+  width: 100%;
+  height: 100vh;
+  background: #ffcc00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+nav {
+  background: #fff;
+  border-radius: 9px;
+  padding: 30px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+}
+nav ul li {
+  display: inline-block;
+  list-style: none;
+  font-size: 2rem;
+  padding: 0 10px;
+  margin: 0 20px;
+  cursor: pointer;
+  position: relative;
+}
+nav ul li:after {
+  content: "";
+  width: 0;
+  height: 3px;
+  background: #ffcc00;
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  transition: 0.5s;
+}
+nav ul li:hover::after {
+  width: 100%;
+}
+a:active, /* активная/посещенная ссылка */
+a:hover,  /* при наведении */
+a {
+  text-decoration: none;
+  color: #666;
+}
+</style>
+<body>
+<div class="container">
+  <nav>
+    <ul>
+      <li><a href="/cafedras">Cafedra</a></li>
+      <li><a href="/groups">Group</a></li>
+      <li><a href="/lessons">Lesson</a></li>
+      <li><a href="/students">Student</a></li>
+      <li><a href="/student_has_lessons">Student(HL)</a></li>
+      <li><a href="/teachers">Teacher</a></li>
+      <li><a href="/teacher_has_lessons">Teacher(HL)</a></li>
+    </ul>
+  </nav>
+</div>
+</body>
+</html>

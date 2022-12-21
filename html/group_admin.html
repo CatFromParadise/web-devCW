@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> Use of JQuery to Add Edit Delete Table Row </title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+</head>
+<style>
+.bordered {
+    border: solid #ccc 1px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 1px 1px #ccc;
+    -moz-box-shadow: 0 1px 1px #ccc;
+    box-shadow: 0 1px 1px #ccc;
+}
+
+tr:hover {
+    background: #fbf8e9;
+    -o-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+
+td,th {
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #dce9f9;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));
+    background-image: -webkit-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:    -moz-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:     -ms-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:      -o-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:         linear-gradient(top, #ebf3fc, #dce9f9);
+    -webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+    -moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
+    box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+    border-top: none;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+
+td:first-child, .bordered th:first-child {
+    border-left: none;
+}
+
+th:first-child {
+    -moz-border-radius: 6px 0 0 0;
+    -webkit-border-radius: 6px 0 0 0;
+    border-radius: 6px 0 0 0;
+}
+
+th:last-child {
+    -moz-border-radius: 0 6px 0 0;
+    -webkit-border-radius: 0 6px 0 0;
+    border-radius: 0 6px 0 0;
+}
+
+th:only-child{
+    -moz-border-radius: 6px 6px 0 0;
+    -webkit-border-radius: 6px 6px 0 0;
+    border-radius: 6px 6px 0 0;
+}
+
+tr:last-child td:first-child {
+    -moz-border-radius: 0 0 0 6px;
+    -webkit-border-radius: 0 0 0 6px;
+    border-radius: 0 0 0 6px;
+}
+
+tr:last-child td:last-child {
+    -moz-border-radius: 0 0 6px 0;
+    -webkit-border-radius: 0 0 6px 0;
+    border-radius: 0 0 6px 0;
+}
+</style>
+<body>
+<div class="container">
+  <h1> groups </h1>
+  <form>
+    <div class="form-group">
+      <label>group_name:</label>
+      <input type="text" name="group_name" class="form-control"  required="">
+    </div>
+    <div class="form-group">
+      <label>group_student_count:</label>
+      <input type="text" name="group_student_count" class="form-control"  required="">
+    </div>
+    <div class="form-group">
+        <label>cafedra_id_cafedra:</label>
+        <input type="text" name="cafedra_id_cafedra" class="form-control"  required="">
+    </div>
+    <button type="submit" class="btn btn-success save-btn">Save</button>
+  </form>
+  <br/>
+  <table class="table table-bordered data-table">
+    <thead>
+      <th>group_name</th>
+      <th>group_student_count</th>
+      <th>cafedra_id_cafedra</th>
+      <th width="200px">Action</th>
+    </thead>
+    <tbody>
+
+    </tbody>
+  </table>
+
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    function addRow(id_group, group_name, group_student_count, cafedra_id_cafedra) {
+        $(".data-table tbody").append("<tr>"
+            +"<td hidden class='id_hidden'>"+id_group+"</td>"
+            +`<td data-type='group_name' data-value='${group_name}'>${group_name}</td>
+            <td data-type='group_student_count' data-value='${group_student_count}'>${group_student_count}</td>
+            <td data-type='cafedra_id_cafedra' data-value='${cafedra_id_cafedra}'>${cafedra_id_cafedra}</td>`
+            +"<td data-type='buttons'><button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button></td></tr>");
+    }
+    function loadAllgroups() {
+        $.get("/get_groups", (data) => {
+            data.forEach(element => {
+                addRow(element.id_group, element.group_name, element.group_student_count, element.cafedra_id_cafedra)
+            });
+        })
+    }
+    loadAllgroups()
+    $("form").submit(function(e){
+        e.preventDefault();
+        let group_name = $("input[name='group_name']").val();
+        let group_student_count = $("input[name='group_student_count']").val();
+        let cafedra_id_cafedra = $("input[name='cafedra_id_cafedra']").val();
+
+        group = {
+            "group_name": group_name,
+            "group_student_count": group_student_count,
+            "cafedra_id_cafedra": cafedra_id_cafedra,
+        }
+        $.ajax({
+            type: "POST",
+            url: "/admin/group/0",
+            data: JSON.stringify(group),
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+                addRow(result.id_group, group_name, group_student_count, cafedra_id_cafedra)
+            }
+        });
+        $("input[name='group_name']").val('');
+        $("input[name='group_student_count']").val('');
+        $("input[name='cafedra_id_cafedra']").val('');
+    });
+
+    $("body").on("click", ".btn-delete", function(){
+        let tr = $(this).parents("tr");
+        let id = tr.find(".id_hidden").html();
+        $.ajax({
+            type: "DELETE",
+            url: "/admin/group/"+id,
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+                console.log(result)
+            }
+        });
+        tr.remove();
+    });
+
+    $("body").on("click", ".btn-edit", function(){
+        let group_name = $(this).parents("tr").find('[data-type="group_name"]');
+        let group_student_count = $(this).parents("tr").find('[data-type="group_student_count"]');
+        let cafedra_id_cafedra = $(this).parents("tr").find('[data-type="cafedra_id_cafedra"]');
+        let buttons = $(this).parents("tr").find('[data-type="buttons"]');
+        let group_name_val = group_name.html()
+        let group_student_count_val = group_student_count.html()
+        let cafedra_id_cafedra_val = cafedra_id_cafedra.html()
+        group_name.html($("<input />").val(group_name_val))
+        group_student_count.html($("<input />").val(group_student_count_val))
+        cafedra_id_cafedra.html($("<input />").val(cafedra_id_cafedra_val))
+        buttons.html("<button class='btn btn-info btn-xs btn-update'>Update</button><button class='btn btn-warning btn-xs btn-cancel'>Cancel</button>")
+    });
+
+    $("body").on("click", ".btn-cancel", function(){
+        let group_name = $(this).parents("tr").find('[data-type="group_name"]');
+        let group_student_count = $(this).parents("tr").find('[data-type="group_student_count"]');
+        let cafedra_id_cafedra = $(this).parents("tr").find('[data-type="cafedra_id_cafedra"]');
+        let buttons = $(this).parents("tr").find('[data-type="buttons"]');
+        group_name.html(group_name.data("value"));
+        group_student_count.html(group_student_count.data("value"));
+        cafedra_id_cafedra.html(cafedra_id_cafedra.data("value"));
+        buttons.html("<button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button>")
+    });
+
+    $("body").on("click", ".btn-update", function(){
+        let id_group = $(this).parents("tr").find(".id_hidden").html();
+        let group_name = $(this).parents("tr").find('[data-type="group_name"]');
+        let group_student_count = $(this).parents("tr").find('[data-type="group_student_count"]');
+        let cafedra_id_cafedra = $(this).parents("tr").find('[data-type="cafedra_id_cafedra"]');
+        let buttons = $(this).parents("tr").find('[data-type="buttons"]');
+        new_data = {
+            id_group: id_group,
+            group_name: group_name.children("input").val(),
+            group_student_count: group_student_count.children("input").val(),
+            cafedra_id_cafedra: cafedra_id_cafedra.children("input").val()
+        }
+        console.log(new_data)
+        $.ajax({
+            type: "UPDATE",
+            url: "/admin/group/"+id_group,
+            data: JSON.stringify(new_data),
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+                console.log(result)
+            }
+        });
+        group_name.html(group_name.children("input").val())
+        group_student_count.html(group_student_count.children("input").val())
+        cafedra_id_cafedra.html(cafedra_id_cafedra.children("input").val())
+        buttons.html("<button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button>")
+    });
+</script>
+</body>
+</html>

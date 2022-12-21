@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> Use of JQuery to Add Edit Delete Table Row </title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+</head>
+<style>
+.bordered {
+    border: solid #ccc 1px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 1px 1px #ccc;
+    -moz-box-shadow: 0 1px 1px #ccc;
+    box-shadow: 0 1px 1px #ccc;
+}
+
+tr:hover {
+    background: #fbf8e9;
+    -o-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+
+td,th {
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #dce9f9;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));
+    background-image: -webkit-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:    -moz-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:     -ms-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:      -o-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:         linear-gradient(top, #ebf3fc, #dce9f9);
+    -webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+    -moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
+    box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+    border-top: none;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+
+td:first-child, .bordered th:first-child {
+    border-left: none;
+}
+
+th:first-child {
+    -moz-border-radius: 6px 0 0 0;
+    -webkit-border-radius: 6px 0 0 0;
+    border-radius: 6px 0 0 0;
+}
+
+th:last-child {
+    -moz-border-radius: 0 6px 0 0;
+    -webkit-border-radius: 0 6px 0 0;
+    border-radius: 0 6px 0 0;
+}
+
+th:only-child{
+    -moz-border-radius: 6px 6px 0 0;
+    -webkit-border-radius: 6px 6px 0 0;
+    border-radius: 6px 6px 0 0;
+}
+
+tr:last-child td:first-child {
+    -moz-border-radius: 0 0 0 6px;
+    -webkit-border-radius: 0 0 0 6px;
+    border-radius: 0 0 0 6px;
+}
+
+tr:last-child td:last-child {
+    -moz-border-radius: 0 0 6px 0;
+    -webkit-border-radius: 0 0 6px 0;
+    border-radius: 0 0 6px 0;
+}
+</style>
+<body>
+<div class="container">
+  <h1> students </h1>
+  <form>
+    <div class="form-group">
+      <label>student_fio:</label>
+      <input type="text" name="student_fio" class="form-control"  required="">
+    </div>
+    <div class="form-group">
+      <label>student_phone:</label>
+      <input type="text" name="student_phone" class="form-control"  required="">
+    </div>
+    <div class="form-group">
+        <label>student_sex:</label>
+        <input type="text" name="student_sex" class="form-control"  required="">
+    </div>
+    <div class="form-group">
+    <label>group_id_group:</label>
+    <input type="text" name="group_id_group" class="form-control"  required="">
+    </div>
+
+    <button type="submit" class="btn btn-success save-btn">Save</button>
+  </form>
+  <br/>
+  <table class="table table-bordered data-table">
+    <thead>
+      <th>student_fio</th>
+      <th>student_phone</th>
+      <th>student_sex</th>
+      <th>group_id_group</th>
+      <th width="200px">Action</th>
+    </thead>
+    <tbody>
+
+    </tbody>
+  </table>
+
+</div>
+<script type="text/javascript">
+    function addRow(id_student, student_fio, student_phone, student_sex, group_id_group) {
+        $(".data-table tbody").append("<tr>"
+            +"<td hidden class='id_hidden'>"+id_student+"</td>"
+            +`<td data-type='student_fio' data-value='${student_fio}'>${student_fio}</td>
+            <td data-type='student_phone' data-value='${student_phone}'>${student_phone}</td>
+            <td data-type='student_sex' data-value='${student_sex}'>${student_sex}</td>
+            <td data-type='group_id_group' data-value='${group_id_group}'>${group_id_group}</td>`
+            +"<td data-type='buttons'><button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button></td></tr>");
+    }
+
+    function loadAllstudents() {
+        $.get("/get_students", (data) => {
+            data.forEach(element => {
+                addRow(element.id_student, element.student_fio, element.student_phone, element.student_sex, element.group_id_group)
+            });
+        })
+    }
+    loadAllstudents()
+    $("form").submit(function(e){
+        e.preventDefault();
+        let student_fio = $("input[name='student_fio']").val();
+        let student_phone = $("input[name='student_phone']").val();
+        let student_sex = $("input[name='student_sex']").val();
+        let group_id_group = $("input[name='group_id_group']").val();
+        student = {
+            "student_fio": student_fio,
+            "student_phone": student_phone,
+            "student_sex": student_sex,
+            "group_id_group": group_id_group,
+        }
+        $.ajax({
+            type: "POST",
+            url: "/admin/student/0",
+            data: JSON.stringify(student),
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+                addRow(result.id_student, student_fio, student_phone, student_sex, group_id_group)
+            }
+        });
+        $("input[name='student_fio']").val('');
+        $("input[name='student_phone']").val('');
+        $("input[name='student_sex']").val('');
+        $("input[name='group_id_group']").val('');
+    });
+
+    $("body").on("click", ".btn-delete", function(){
+        let tr = $(this).parents("tr");
+        let id = tr.find(".id_hidden").html();
+        $.ajax({
+            type: "DELETE",
+            url: "/admin/student/"+id,
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+                console.log(result)
+            }
+        });
+        tr.remove();
+    });
+
+    $("body").on("click", ".btn-edit", function(){
+        let student_fio = $(this).parents("tr").find('[data-type="student_fio"]');
+        let student_phone = $(this).parents("tr").find('[data-type="student_phone"]');
+        let student_sex = $(this).parents("tr").find('[data-type="student_sex"]');
+        let group_id_group = $(this).parents("tr").find('[data-type="group_id_group"]');
+        let buttons = $(this).parents("tr").find('[data-type="buttons"]');
+        let student_fio_val = student_fio.html()
+        let student_phone_val = student_phone.html()
+        let student_sex_val = student_sex.html()
+        let group_id_group_val = group_id_group.html()
+        student_fio.html($("<input />").val(student_fio_val))
+        student_phone.html($("<input />").val(student_phone_val))
+        student_sex.html($("<input />").val(student_sex_val))
+        group_id_group.html($("<input />").val(group_id_group_val))
+        buttons.html("<button class='btn btn-info btn-xs btn-update'>Update</button><button class='btn btn-warning btn-xs btn-cancel'>Cancel</button>")
+    });
+
+    $("body").on("click", ".btn-cancel", function(){
+        let student_fio = $(this).parents("tr").find('[data-type="student_fio"]');
+        let student_phone = $(this).parents("tr").find('[data-type="student_phone"]');
+        let student_sex = $(this).parents("tr").find('[data-type="student_sex"]');
+        let group_id_group = $(this).parents("tr").find('[data-type="group_id_group"]');
+        let buttons = $(this).parents("tr").find('[data-type="buttons"]');
+        student_fio.html(student_fio.data("value"));
+        student_phone.html(student_phone.data("value"));
+        student_sex.html(student_sex.data("value"));
+        group_id_group.html(group_id_group.data("value"));
+        buttons.html("<button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button>")
+    });
+
+    $("body").on("click", ".btn-update", function(){
+        let id_student = $(this).parents("tr").find(".id_hidden").html();
+        let student_fio = $(this).parents("tr").find('[data-type="student_fio"]');
+        let student_phone = $(this).parents("tr").find('[data-type="student_phone"]');
+        let student_sex = $(this).parents("tr").find('[data-type="student_sex"]');
+        let group_id_group = $(this).parents("tr").find('[data-type="group_id_group"]');
+        let buttons = $(this).parents("tr").find('[data-type="buttons"]');
+        new_data = {
+            id_student: id_student,
+            student_fio: student_fio.children("input").val(),
+            student_phone: student_phone.children("input").val(),
+            student_sex: student_sex.children("input").val(),
+            group_id_group: group_id_group.children("input").val(),
+        }
+        console.log(new_data)
+        $.ajax({
+            type: "UPDATE",
+            url: "/admin/student/"+id_student,
+            data: JSON.stringify(new_data),
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+                console.log(result)
+            }
+        });
+        student_fio.html(student_fio.children("input").val())
+        student_phone.html(student_phone.children("input").val())
+        student_sex.html(student_sex.children("input").val())
+        group_id_group.html(group_id_group.children("input").val())
+        buttons.html("<button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button>")
+    });
+</script>
+</body>
+</html>

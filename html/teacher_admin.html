@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> Use of JQuery to Add Edit Delete Table Row </title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+</head>
+<style>
+    .table {
+      background: #f5ffff;
+      border-collapse: collapse;
+      text-align: left;
+      margin: auto;
+    }
+    .table th {
+      border-top: 1px solid #777777;
+      border-bottom: 1px solid #777777;
+      box-shadow: inset 0 1px 0 #999999, inset 0 -1px 0 #999999;
+      background: linear-gradient(#9595b6, #5a567f);
+      color: white;
+      padding: 10px 15px;
+      position: relative;
+    }
+    .table th:after {
+      content: "";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 25%;
+      height: 25%;
+      width: 100%;
+      background: linear-gradient(rgba(255, 255, 255, 0), rgba(255,255,255,.08));
+    }
+    .table tr:nth-child(odd) {
+      background: #ebf3f9;
+    }
+    .table th:first-child {
+      border-left: 1px solid #777777;
+      border-bottom:  1px solid #777777;
+      box-shadow: inset 1px 1px 0 #999999, inset 0 -1px 0 #999999;
+    }
+    .table th:last-child {
+      border-right: 1px solid #777777;
+      border-bottom:  1px solid #777777;
+      box-shadow: inset -1px 1px 0 #999999, inset 0 -1px 0 #999999;
+    }
+    .table td {
+      border: 1px solid #e3eef7;
+      padding: 10px 15px;
+      position: relative;
+      transition: all 0.5s ease;
+    }
+    .table tbody:hover td {
+      color: transparent;
+      text-shadow: 0 0 3px #a09f9d;
+    }
+    .table tbody:hover tr:hover td {
+      color: #444444;
+      text-shadow: none;
+    }
+    .btn{
+      padding-top: 3px;
+      padding-bottom: 3px;
+      padding-left: 10px;
+      padding-right: 10px;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+</style>
+<body>
+<div class="container">
+  <h1> teachers </h1>
+  <form>
+    <div class="form-group">
+      <label>teacher_fio:</label>
+      <input type="text" name="teacher_fio" class="form-control"  required="">
+    </div>
+    <div class="form-group">
+      <label>teacher_age:</label>
+      <input type="text" name="teacher_age" class="form-control"  required="">
+    </div>
+    <div class="form-group">
+        <label>teacher_phone:</label>
+        <input type="text" name="teacher_phone" class="form-control"  required="">
+    </div>
+    <div class="form-group">
+    <label>teacher_sex:</label>
+    <input type="text" name="teacher_sex" class="form-control"  required="">
+    </div>
+    <div class="form-group">
+    <label>cafedra_id_cafedra:</label>
+    <input type="text" name="cafedra_id_cafedra" class="form-control"  required="">
+    </div>
+    <button type="submit" class="btn btn-success save-btn">Save</button>
+  </form>
+  <br/>
+  <table class="table table-bordered data-table">
+    <thead>
+      <th>teacher_fio</th>
+      <th>teacher_age</th>
+      <th>teacher_phone</th>
+      <th>teacher_sex</th>
+      <th>cafedra_id_cafedra</th>
+      <th width="200px">Action</th>
+    </thead>
+    <tbody>
+
+    </tbody>
+  </table>
+
+</div>
+<script type="text/javascript">
+    function addRow(id_teacher, teacher_fio, teacher_age, teacher_phone, teacher_sex, cafedra_id_cafedra) {
+        $(".data-table tbody").append("<tr>"
+            +"<td hidden class='id_hidden'>"+id_teacher+"</td>"
+            +`<td data-type='teacher_fio' data-value='${teacher_fio}'>${teacher_fio}</td>
+            <td data-type='teacher_age' data-value='${teacher_age}'>${teacher_age}</td>
+            <td data-type='teacher_phone' data-value='${teacher_phone}'>${teacher_phone}</td>
+            <td data-type='teacher_sex' data-value='${teacher_sex}'>${teacher_sex}</td>
+            <td data-type='cafedra_id_cafedra' data-value='${cafedra_id_cafedra}'>${cafedra_id_cafedra}</td>`
+            +"<td data-type='buttons'><button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button></td></tr>");
+    }
+
+    function loadAllteachers() {
+        $.get("/get_teachers", (data) => {
+            data.forEach(element => {
+                addRow(element.id_teacher, element.teacher_fio, element.teacher_age, element.teacher_phone, element.teacher_sex, element.cafedra_id_cafedra)
+            });
+        })
+    }
+    loadAllteachers()
+    $("form").submit(function(e){
+        e.preventDefault();
+        let teacher_fio = $("input[name='teacher_fio']").val();
+        let teacher_age = $("input[name='teacher_age']").val();
+        let teacher_phone = $("input[name='teacher_phone']").val();
+        let teacher_sex = $("input[name='teacher_sex']").val();
+        let cafedra_id_cafedra = $("input[name='cafedra_id_cafedra']").val();
+        teacher = {
+            "teacher_fio": teacher_fio,
+            "teacher_age": teacher_age,
+            "teacher_phone": teacher_phone,
+            "teacher_sex": teacher_sex,
+            "cafedra_id_cafedra": cafedra_id_cafedra,
+        }
+        $.ajax({
+            type: "POST",
+            url: "/admin/teacher/0",
+            data: JSON.stringify(teacher),
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+                addRow(result.id_teacher, teacher_fio, teacher_age, teacher_phone, teacher_sex,cafedra_id_cafedra)
+            }
+        });
+        $("input[name='teacher_fio']").val('');
+        $("input[name='teacher_age']").val('');
+        $("input[name='teacher_phone']").val('');
+        $("input[name='teacher_sex']").val('');
+        $("input[name='cafedra_id_cafedra']").val('');
+    });
+
+    $("body").on("click", ".btn-delete", function(){
+        let tr = $(this).parents("tr");
+        let id = tr.find(".id_hidden").html();
+        $.ajax({
+            type: "DELETE",
+            url: "/admin/teacher/"+id,
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+                console.log(result)
+            }
+        });
+        tr.remove();
+    });
+
+    $("body").on("click", ".btn-edit", function(){
+        let teacher_fio = $(this).parents("tr").find('[data-type="teacher_fio"]');
+        let teacher_age = $(this).parents("tr").find('[data-type="teacher_age"]');
+        let teacher_phone = $(this).parents("tr").find('[data-type="teacher_phone"]');
+        let teacher_sex = $(this).parents("tr").find('[data-type="teacher_sex"]');
+        let cafedra_id_cafedra = $(this).parents("tr").find('[data-type="cafedra_id_cafedra"]');
+        let buttons = $(this).parents("tr").find('[data-type="buttons"]');
+        let teacher_fio_val = teacher_fio.html();
+        let teacher_age_val = teacher_age.html();
+        let teacher_phone_val = teacher_phone.html();
+        let teacher_sex_val = teacher_sex.html();
+        let cafedra_id_cafedra_val = cafedra_id_cafedra.html();
+        teacher_fio.html($("<input />").val(teacher_fio_val));
+        teacher_age.html($("<input />").val(teacher_age_val));
+        teacher_phone.html($("<input />").val(teacher_phone_val));
+        teacher_sex.html($("<input />").val(teacher_sex_val));
+        cafedra_id_cafedra.html($("<input />").val(cafedra_id_cafedra_val));
+        buttons.html("<button class='btn btn-info btn-xs btn-update'>Update</button><button class='btn btn-warning btn-xs btn-cancel'>Cancel</button>")
+    });
+
+    $("body").on("click", ".btn-cancel", function(){
+        let teacher_fio = $(this).parents("tr").find('[data-type="teacher_fio"]');
+        let teacher_age = $(this).parents("tr").find('[data-type="teacher_age"]');
+        let teacher_phone = $(this).parents("tr").find('[data-type="teacher_phone"]');
+        let teacher_sex = $(this).parents("tr").find('[data-type="teacher_sex"]');
+        let cafedra_id_cafedra = $(this).parents("tr").find('[data-type="cafedra_id_cafedra"]');
+        let buttons = $(this).parents("tr").find('[data-type="buttons"]');
+        let teacher_fio_val = teacher_fio.html();
+        let teacher_age_val = teacher_age.html();
+        let teacher_phone_val = teacher_phone.html();
+        let teacher_sex_val = teacher_sex.html();
+        let cafedra_id_cafedra_val = cafedra_id_cafedra.html();
+        teacher_fio.html($("<input />").val(teacher_fio_val));
+        teacher_age.html($("<input />").val(teacher_age_val));
+        teacher_phone.html($("<input />").val(teacher_phone_val));
+        teacher_sex.html($("<input />").val(teacher_sex_val));
+        cafedra_id_cafedra.html($("<input />").val(cafedra_id_cafedra_val));
+        buttons.html("<button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button>")
+    });
+
+    $("body").on("click", ".btn-update", function(){
+        let id_teacher = $(this).parents("tr").find(".id_hidden").html();
+        let teacher_fio = $(this).parents("tr").find('[data-type="teacher_fio"]');
+        let teacher_age = $(this).parents("tr").find('[data-type="teacher_age"]');
+        let teacher_phone = $(this).parents("tr").find('[data-type="teacher_phone"]');
+        let teacher_sex = $(this).parents("tr").find('[data-type="teacher_sex"]');
+        let cafedra_id_cafedra = $(this).parents("tr").find('[data-type="cafedra_id_cafedra"]');
+        let buttons = $(this).parents("tr").find('[data-type="buttons"]');
+        new_data = {
+            id_teacher: id_teacher,
+            teacher_fio: teacher_fio.children("input").val(),
+            teacher_age: teacher_age.children("input").val(),
+            teacher_phone: teacher_phone.children("input").val(),
+            teacher_sex: teacher_sex.children("input").val(),
+            cafedra_id_cafedra: cafedra_id_cafedra.children("input").val(),
+        }
+        console.log(new_data)
+        $.ajax({
+            type: "UPDATE",
+            url: "/admin/teacher/"+id_teacher,
+            data: JSON.stringify(new_data),
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+                console.log(result)
+            }
+        });
+        teacher_fio.html(teacher_fio.children("input").val())
+        teacher_age.html(teacher_age.children("input").val())
+        teacher_phone.html(teacher_phone.children("input").val())
+        teacher_sex.html(teacher_sex.children("input").val())
+        cafedra_id_cafedra.html(cafedra_id_cafedra.children("input").val())
+        buttons.html("<button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button>")
+    });
+</script>
+</body>
+</html>

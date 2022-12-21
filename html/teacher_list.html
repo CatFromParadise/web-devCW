@@ -1,0 +1,130 @@
+<style>
+ table {
+    overflow:hidden;
+    border:1px solid #d3d3d3;
+    background:#fefefe;
+    width:70%;
+    margin:5% auto 0;
+    -moz-border-radius:5px; /* FF1+ */
+    -webkit-border-radius:5px; /* Saf3-4 */
+    border-radius:5px;
+    -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+th, td {
+    padding:18px 28px 18px;
+    text-align:center;
+}
+
+th {
+    padding-top:22px;
+    text-shadow: 1px 1px 1px #fff;
+    background:#e8eaeb;
+}
+
+td {
+    border-top:1px solid #e0e0e0;
+    border-right:1px solid #e0e0e0;
+}
+
+tr.odd-row td {
+    background:#f6f6f6;
+}
+
+td.first, th.first {
+    text-align:left
+}
+
+td.last {
+    border-right:none;
+}
+
+td {
+    background: -moz-linear-gradient(100% 25% 90deg, #fefefe, #f9f9f9);
+    background: -webkit-gradient(linear, 0% 0%, 0% 25%, from(#f9f9f9), to(#fefefe));
+}
+
+tr.odd-row td {
+    background: -moz-linear-gradient(100% 25% 90deg, #f6f6f6, #f1f1f1);
+    background: -webkit-gradient(linear, 0% 0%, 0% 25%, from(#f1f1f1), to(#f6f6f6));
+}
+
+th {
+    background: -moz-linear-gradient(100% 20% 90deg, #e8eaeb, #ededed);
+    background: -webkit-gradient(linear, 0% 0%, 0% 20%, from(#ededed), to(#e8eaeb));
+}
+
+tr:first-child th.first {
+    -moz-border-radius-topleft:5px;
+    -webkit-border-top-left-radius:5px; /* Saf3-4 */
+}
+
+tr:first-child th.last {
+    -moz-border-radius-topright:5px;
+    -webkit-border-top-right-radius:5px; /* Saf3-4 */
+}
+
+tr:last-child td.first {
+    -moz-border-radius-bottomleft:5px;
+    -webkit-border-bottom-left-radius:5px; /* Saf3-4 */
+}
+
+tr:last-child td.last {
+    -moz-border-radius-bottomright:5px;
+    -webkit-border-bottom-right-radius:5px; /* Saf3-4 */
+}
+
+.button-custom {
+  display: flex;
+  align-items: center;
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 0.7em 1.4em 0.7em 1.1em;
+  color: white;
+  background: #ad5389;
+  background: linear-gradient(0deg, rgba(20,167,62,1) 0%, rgba(102,247,113,1) 100%);
+  border: none;
+  box-shadow: 0 0.7em 1.5em -0.5em #14a73e98;
+  letter-spacing: 0.05em;
+  border-radius: 20em;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-custom:hover {
+  box-shadow: 0 0.5em 1.5em -0.5em #14a73e98;
+}
+
+.button-custom:active {
+  box-shadow: 0 0.3em 1em -0.5em #14a73e98;
+}
+</style>
+<button class="button-custom" role="button" onclick="history.back();"> &#10229; </button>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">id_teacher</th>
+            <th scope="col">teacher_fio</th>
+            <th scope="col">teacher_age</th>
+            <th scope="col">teacher_phone</th>
+            <th scope="col">teacher_sex</th>
+            <th scope="col">cafedra_id_cafedra</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for teacher in teachers %}
+            <tr>
+                <td>{{ teacher.id_teacher }}</td>
+                <td>{{ teacher.teacher_fio }}</td>
+                <td>{{ teacher.teacher_age }}</td>
+                <td>{{ teacher.teacher_phone }}</td>
+                <td>{{ teacher.teacher_sex }}</td>
+                <td>{{ teacher.cafedra_id_cafedra }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> Use of JQuery to Add Edit Delete Table Row </title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+</head>
+<style>
+ .bordered {
+    border: solid #ccc 1px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 1px 1px #ccc;
+    -moz-box-shadow: 0 1px 1px #ccc;
+    box-shadow: 0 1px 1px #ccc;
+}
+
+tr:hover {
+    background: #fbf8e9;
+    -o-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+
+td,th {
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #dce9f9;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));
+    background-image: -webkit-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:    -moz-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:     -ms-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:      -o-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:         linear-gradient(top, #ebf3fc, #dce9f9);
+    -webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+    -moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
+    box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+    border-top: none;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+
+td:first-child, .bordered th:first-child {
+    border-left: none;
+}
+
+th:first-child {
+    -moz-border-radius: 6px 0 0 0;
+    -webkit-border-radius: 6px 0 0 0;
+    border-radius: 6px 0 0 0;
+}
+
+th:last-child {
+    -moz-border-radius: 0 6px 0 0;
+    -webkit-border-radius: 0 6px 0 0;
+    border-radius: 0 6px 0 0;
+}
+
+th:only-child{
+    -moz-border-radius: 6px 6px 0 0;
+    -webkit-border-radius: 6px 6px 0 0;
+    border-radius: 6px 6px 0 0;
+}
+
+tr:last-child td:first-child {
+    -moz-border-radius: 0 0 0 6px;
+    -webkit-border-radius: 0 0 0 6px;
+    border-radius: 0 0 0 6px;
+}
+
+tr:last-child td:last-child {
+    -moz-border-radius: 0 0 6px 0;
+    -webkit-border-radius: 0 0 6px 0;
+    border-radius: 0 0 6px 0;
+}
+</style>
+<body>
+<div class="container">
+  <h1> student_has_lessons </h1>
+  <form>
+    <div class="form-student_has_lesson">
+      <label>lesson_id_lesson:</label>
+      <input type="text" name="lesson_id_lesson" class="form-control"  required="">
+    </div>
+    <div class="form-student_has_lesson">
+      <label>mark:</label>
+      <input type="text" name="mark" class="form-control"  required="">
+    </div>
+
+    <button type="submit" class="btn btn-success save-btn">Save</button>
+  </form>
+  <br/>
+  <table class="table table-bordered data-table">
+    <thead>
+      <th>lesson_id_lesson</th>
+      <th>mark</th>
+      <th width="200px">Action</th>
+    </thead>
+    <tbody>
+
+    </tbody>
+  </table>
+
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    function addRow(student_id_student, lesson_id_lesson, mark) {
+        $(".data-table tbody").append("<tr>"
+            +"<td hidden class='id_hidden'>"+student_id_student+"</td>"
+            +`<td data-type='lesson_id_lesson' data-value='${lesson_id_lesson}'>${lesson_id_lesson}</td>
+            <td data-type='mark' data-value='${mark}'>${mark}</td>`
+            +"<td data-type='buttons'><button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button></td></tr>");
+    }
+    function loadAllstudent_has_lessons() {
+        $.get("/get_student_has_lessons", (data) => {
+            data.forEach(element => {
+                addRow(element.student_id_student, element.lesson_id_lesson, element.mark)
+            });
+        })
+    }
+    loadAllstudent_has_lessons()
+    $("form").submit(function(e){
+        e.preventDefault();
+        let lesson_id_lesson = $("input[name='lesson_id_lesson']").val();
+        let mark = $("input[name='mark']").val();
+
+        student_has_lesson = {
+            "lesson_id_lesson": lesson_id_lesson,
+            "mark": mark,
+        }
+        $.ajax({
+            type: "POST",
+            url: "/admin/student_has_lesson/0",
+            data: JSON.stringify(student_has_lesson),
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+                addRow(result.student_id_student, lesson_id_lesson, mark)
+            }
+        });
+        $("input[name='lesson_id_lesson']").val('');
+        $("input[name='mark']").val('');
+    });
+
+    $("body").on("click", ".btn-delete", function(){
+        let tr = $(this).parents("tr");
+        let id = tr.find(".id_hidden").html();
+        $.ajax({
+            type: "DELETE",
+            url: "/admin/student_has_lesson/"+id,
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+                console.log(result)
+            }
+        });
+        tr.remove();
+    });
+
+    $("body").on("click", ".btn-edit", function(){
+        let lesson_id_lesson = $(this).parents("tr").find('[data-type="lesson_id_lesson"]');
+        let mark = $(this).parents("tr").find('[data-type="mark"]');
+        let buttons = $(this).parents("tr").find('[data-type="buttons"]');
+        let lesson_id_lesson_val = lesson_id_lesson.html()
+        let mark_val = mark.html()
+        lesson_id_lesson.html($("<input />").val(lesson_id_lesson_val))
+        mark.html($("<input />").val(mark_val))
+        buttons.html("<button class='btn btn-info btn-xs btn-update'>Update</button><button class='btn btn-warning btn-xs btn-cancel'>Cancel</button>")
+    });
+
+    $("body").on("click", ".btn-cancel", function(){
+        let lesson_id_lesson = $(this).parents("tr").find('[data-type="lesson_id_lesson"]');
+        let mark = $(this).parents("tr").find('[data-type="mark"]');
+        let buttons = $(this).parents("tr").find('[data-type="buttons"]');
+        lesson_id_lesson.html(lesson_id_lesson.data("value"));
+        mark.html(mark.data("value"));
+        buttons.html("<button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button>")
+    });
+
+    $("body").on("click", ".btn-update", function(){
+        let student_id_student = $(this).parents("tr").find(".id_hidden").html();
+        let lesson_id_lesson = $(this).parents("tr").find('[data-type="lesson_id_lesson"]');
+        let mark = $(this).parents("tr").find('[data-type="mark"]');
+        let buttons = $(this).parents("tr").find('[data-type="buttons"]');
+        new_data = {
+            student_id_student: student_id_student,
+            lesson_id_lesson: lesson_id_lesson.children("input").val(),
+            mark: mark.children("input").val(),
+        }
+        console.log(new_data)
+        $.ajax({
+            type: "UPDATE",
+            url: "/admin/student_has_lesson/"+student_id_student,
+            data: JSON.stringify(new_data),
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+                console.log(result)
+            }
+        });
+        lesson_id_lesson.html(lesson_id_lesson.children("input").val())
+        mark.html(mark.children("input").val())
+        buttons.html("<button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button>")
+    });
+</script>
+</body>
+</html>
